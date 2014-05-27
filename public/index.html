@@ -11,10 +11,37 @@
 		<button type="submit" id="searchButton" class="btn btn-primary">Search</button>
 	</form>
 	<ol id="tweets"></ol>
+	<ol id="trending"></ol>
+	<button type="submit" id="trendingButton" class="btn btn-primary">Trending Topics in SF</button>
+
 
 	<script type="text/javascript">
+		$("#trendingButton").click(function(){
+			$('#trending').html("");
+			var api_root = "https://997d4f01-64806db68ca0.my.apitools.com/";
+			var api_url = api_root+"trends/place.json?id=2487956"
+			$.ajax({
+		        type: "GET",
+		        url: api_url,
+		        dataType: "jsonp",
+		        success: function (response, status, xhr) {
+	              var data = response[0].trends;
+		           if(data.length>0){
+	   		           data.forEach(function(datum) {
+	   		           	$('#trending').append('<li><a href="'+datum.url+'">'+datum.name+'</a></li>');
+		               });
+		           }
+		        },
+		        error: function (xhr, err) {
+		          console.log(xhr);
+		          console.log(xhr.statusText);
+		        }
+			});
+		});
+
 		$("#searchForm").submit(function(e){
 			e.preventDefault();
+			$('#tweets').html("");
 			var url= "https://997d4f01-64806db68ca0.my.apitools.com/";
 			// url += "trends/place.json?id=2487956";
 			url +='search/tweets.json';
@@ -25,7 +52,6 @@
 				url: url,
 				dataType:"json",
 				success:function (response, status, xhr) {
-		           console.log(response.statuses);
 		           var data = response.statuses;
 		           if(data.length>0){
 	   		           data.forEach(function(datum) {
